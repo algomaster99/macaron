@@ -102,6 +102,38 @@ class DBJsonDict(TypeDecorator):  # pylint: disable=W0223
         return value
 
 
+class DBJsonList(TypeDecorator):  # pylint: disable=W0223
+    """SQLAlchemy column type to serialize lists."""
+
+    # It is stored in the database as a json value.
+    impl = JSON
+
+    # To prevent Sphinx from rendering the docstrings for `cache_ok`, make this docstring private.
+    #: :meta private:
+    cache_ok = True
+
+    def process_bind_param(self, value: None | list, dialect: Any) -> None | list:
+        """Process when storing a dict object to the SQLite db.
+
+        value: None | list
+            The value being stored.
+        """
+        if not isinstance(value, list):
+            raise TypeError("DBJsonList type expects a list.")
+
+        return value
+
+    def process_result_value(self, value: None | list, dialect: Any) -> None | list:
+        """Process when loading a dict object from the SQLite db.
+
+        value: None | list
+            The value being loaded.
+        """
+        if not isinstance(value, list):
+            raise TypeError("DBJsonList type expects a list.")
+        return value
+
+
 class ProvenancePayload(TypeDecorator):  # pylint: disable=W0223
     """SQLAlchemy column type to serialize InTotoProvenance."""
 
